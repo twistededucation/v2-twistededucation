@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study.com | Shutdown</title>
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/nevapaid/twisted-assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <canvas id="starCanvas"></canvas>
+  <style>
+    /* Body & Centering */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0b0c10;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      text-align: center;
+      flex-direction: column;
+    }
+
+    /* Particles container */
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+    }
+
+    /* Heading animations */
+    h1 {
+      font-size: 3rem;
+      color: #ff5555;
+      margin: 0;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #b5b5b5;
+      margin: 15px 0 25px 0;
+      animation: fadeIn 5s ease-in-out;
+    }
+
+    a.discord-btn {
+      display: inline-block;
+      text-decoration: none;
+      color: #0b0c10;
+      background: #54ff9b;
+      font-weight: bold;
+      padding: 12px 24px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      animation: popIn 1s ease forwards;
+    }
+
+    a.discord-btn:hover {
+      transform: scale(1.05);
+      background: #00ff88;
+    }
+
+    .footer-links {
+      margin-top: 30px;
+      font-size: 0.9rem;
+    }
+
+    .footer-links a {
+      margin: 0 8px;
+      color: #b5b5b5;
+      font-weight: 1000;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: #54ff9b;
+    }
+
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Particles -->
+  <div id="particles-js"></div>
+
+  <!-- Shutdown content -->
+  <h1>🚫 We are currently down</h1>
+  <p>Our site is undergoing maintenance. Please check back soon!</p>
+  <a class="discord-btn" href="https://discord.gg/rKuch4azCU" target="_blank">Join our Discord</a>
+
+
+  <script>
+    // Initialize particles.js
+    particlesJS.load('particles-js', '/js/particles.json', function() {
+      console.log('Particles loaded');
+    });
+
+    // Optional: redirect back to home if shutdown turns false
+    const firebaseConfig = {
+      apiKey: "AIzaSyBRh5F4faUoqx3PRtZnIuq0KneNjS3JujM",
+      authDomain: "twisted-c49d0.firebaseapp.com",
+      databaseURL: "https://twisted-c49d0-default-rtdb.firebaseio.com",
+      projectId: "twisted-c49d0",
+      storageBucket: "twisted-c49d0.appspot.com",
+      messagingSenderId: "119811030454",
+      appId: "1:119811030454:web:95c106bf758620bc3c9517"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    db.ref('config/shutdown').on('value', snapshot => {
+      if (!snapshot.val()) {
+        window.location.href = '/';
+      }
+    });
+    
+  </script>
+  
+    <script src="/js/firebase.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/loading.js"></script>
+  <script src="/js/theme-loader.js"></script>
+  <script src="/js/stars.js"></script>
+</body>
+</html>

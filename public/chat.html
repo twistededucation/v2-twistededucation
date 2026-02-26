@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study.com | Social</title>
+<!-- Navbar toggle button -->
+<button id="navbar-toggle">Navbar &#x25BC;</button>
+
+<!-- Floating Navbar -->
+<div id="floating-navbar">
+  <button class="nav-btn" onclick="window.location.href='/index.html'">Home</button>
+  <button class="nav-btn" onclick="window.location.href='/math/math.html'">Math</button>
+  <button class="nav-btn" onclick="window.location.href='/public/suggestion.html'">Suggestion</button>
+  <button class="nav-btn" onclick="window.location.href='/public/chat.html'">Chat</button>
+  <button class="nav-btn" onclick="window.location.href='/public/settings.html'">Settings</button>
+</div>
+  <!-- Core Scripts -->
+  <script src="theme-loader.js"></script>
+  <link rel="icon" href="https://cdn.jsdelivr.net/gh/nevapaid/twisted-assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0b0b0b;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1400px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* CENTERED CHAT LAYOUT */
+    .chat-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    /* SIDEBAR - VERTICAL (NOT SIDEWAYS) */
+    .channels-sidebar {
+      width: 240px;
+      background: #111;
+      border-radius: 16px;
+      border: 1px solid #2a2a2a;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: fit-content;
+    }
+
+    .channels-header {
+      font-weight: 700;
+      font-size: 14px;
+      padding-bottom: 12px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #2a2a2a;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .channel-icon {
+      padding: 12px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      color: #b0b0b0;
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .channel-icon:hover {
+      background: #1f1f1f;
+      color: #fff;
+    }
+
+    .channel-icon.active {
+      background: #2d2d2d;
+      color: #fff;
+      border-left: 4px solid #5865f2;
+    }
+
+    .channel-icon span:first-child {
+      font-size: 22px;
+    }
+
+    /* CHAT CONTAINER - PERFECTLY CENTERED */
+    .chat-container {
+      flex: 1;
+      max-width: 900px;
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      background: #111;
+      border-radius: 18px;
+      border: 1px solid #2a2a2a;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .chat-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f0f0f;
+    }
+
+    .chat-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    /* MESSAGES AREA */
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #0a0a0a;
+    }
+
+    /* Message container - Discord style */
+    .message-container {
+      display: flex;
+      padding: 8px 16px;
+      gap: 16px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+      position: relative;
+    }
+
+    .message-container:hover {
+      background: #1a1a1a;
+    }
+
+    .message-container:hover .message-actions {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Avatar */
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .message-content-wrapper {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .message-username {
+      font-weight: 700;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .message-username:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    .user-role-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .message-timestamp {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .message-content {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e0e0e0;
+      word-wrap: break-word;
+    }
+
+    .message-content.muted {
+      opacity: 0.5;
+      font-style: italic;
+    }
+
+    /* Nickname styling */
+    .chat-nickname {
+      font-weight: bold;
+      color: #ffd54f;
+      margin-right: 4px;
+    }
+
+    .chat-realname {
+      font-size: 11px;
+      opacity: 0.65;
+      color: #888;
+    }
+
+    /* Message actions (appear on hover) - NOW AT TOP */
+    .message-actions {
+      position: absolute;
+      right: 16px;
+      top: -20px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      display: flex;
+      gap: 2px;
+      padding: 4px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      z-index: 10;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .message-action-btn {
+      background: transparent;
+      border: none;
+      color: #b0b0b0;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .message-action-btn:hover {
+      background: #2a2a2a;
+      color: #fff;
+    }
+
+    /* Reactions */
+    .reactions-container {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .reaction-badge {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .reaction-badge:hover {
+      background: #2a2a2a;
+      border-color: #404040;
+    }
+
+    .reaction-badge.active {
+      background: #404e7a;
+      border-color: #5f73b0;
+    }
+
+    /* Reply indicator */
+    .reply-indicator {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 4px;
+      padding: 2px 8px;
+      background: #1a1a1a;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* CHAT INPUT */
+    .chat-input-container {
+      border-top: 1px solid #2a2a2a;
+      padding: 16px 24px;
+      display: flex;
+      gap: 12px;
+      background: #0f0f0f;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 40px;
+      border: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .chat-input:focus {
+      border-color: #5865f2;
+      box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.2);
+    }
+
+    .chat-send-btn {
+      padding: 12px 28px;
+      border-radius: 40px;
+      border: none;
+      background: #5865f2;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: #4752c4;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+    }
+
+    /* Reaction Picker */
+    .reaction-picker {
+      position: fixed;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+      z-index: 10000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .reaction-picker button {
+      background: #2a2a2a;
+      border: none;
+      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .reaction-picker button:hover {
+      background: #3a3a3a;
+      transform: scale(1.1);
+    }
+
+    .reaction-picker .close-picker {
+      grid-column: span 8;
+      width: 100%;
+      background: #dc2626;
+      color: white;
+      height: 36px;
+      font-size: 14px;
+      border-radius: 6px;
+    }
+
+    /* Muted Users Popup */
+    .muted-users-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+    }
+
+    .muted-users-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .popup-content {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      padding: 28px;
+      width: 90%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #dc2626;
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .muted-user {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #2a2a2a;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .muted-user button {
+      background: #22c55e;
+      border: none;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* LOADING SCREEN */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loading-center {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    #loading-image {
+      width: 120px;
+      margin: 20px auto;
+      display: block;
+    }
+
+    .progress-wrapper {
+      width: 100%;
+      height: 8px;
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    #loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: white;
+      transition: width 0.3s ease;
+    }
+
+    #skip-loading {
+      margin-top: 15px;
+      padding: 8px 24px;
+      border-radius: 40px;
+      border: none;
+      background: #2a2a2a;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-center">
+      <div id="click-counter">Clicks Today: 0</div>
+      <img id="loading-image" src="https://cdn.jsdelivr.net/gh/nevapaid/twisted-assets/pusheen.png" draggable="false">
+      <div id="loading-text"></div>
+      <div class="progress-wrapper">
+        <div id="loading-bar-fill"></div>
+      </div>
+      <button id="skip-loading">Skip</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="chat-wrapper">
+
+      <!-- Sidebar - VERTICAL (NOT SIDEWAYS) -->
+      <aside class="channels-sidebar">
+        <div class="channels-header">📌 CHANNELS</div>
+
+        <div class="channel-icon active" data-channel="general" onclick="switchChannel('general')">
+          <span>💬</span>
+          <span>General</span>
+        </div>
+
+        <div class="channel-icon" data-channel="announcements" onclick="switchChannel('announcements')">
+          <span>📢</span>
+          <span>Announcements</span>
+        </div>
+      </aside>
+
+      <!-- Chat -->
+      <section class="chat-container">
+        <div class="chat-header">
+          <h3 id="currentChannelName">General Chat</h3>
+          <div class="online-coudnt">
+            <span class="online-ddsot"></span>
+            <span id="chatOnlineCouant">Dont abuse chat.</span> please
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input-container">
+          <input
+            type="text"
+            id="chatInput"
+            class="chat-input"
+            placeholder="Type a message..."
+            maxlength="200"
+            onkeypress="if(event.key==='Enter')sendMessage()"
+          />
+          <button class="chat-send-btn" onclick="sendMessage()">Send</button>
+          <button id="fileUploadBtn" style="display: none;">📎 Upload Image</button>
+<input type="file" id="fileUploadInput" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" style="display: none;">
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Muted Users Popup -->
+  <div id="mutedUsersPopup" class="muted-users-popup">
+    <div class="popup-content">
+      <button class="close-btn" onclick="this.closest('.muted-users-popup').classList.remove('show')">×</button>
+      <h3 style="color: #fff; margin-bottom: 20px; font-size: 20px;">🔇 Muted Users</h3>
+      <div class="muted-list" id="mutedUsersListDisplay"></div>
+    </div>
+  </div>
+
+  <!-- Username Modal -->
+  <div class="modal hidden" id="usernameModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 100000; backdrop-filter: blur(10px);">
+    <div class="modal-content" style="background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 24px; padding: 32px; width: 90%; max-width: 400px;">
+      <h2 style="color: #fff; margin-bottom: 8px; font-size: 24px;">Welcome</h2>
+      <p style="color: #b0b0b0; margin-bottom: 24px;">Choose a username to get started</p>
+      <input type="text" id="usernameInput" placeholder="Enter username..." maxlength="20" style="width: 100%; padding: 14px 16px; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 40px; color: #fff; margin-bottom: 16px; font-size: 15px;">
+      <div class="error" id="usernameError" style="color: #ef4444; font-size: 13px; margin-bottom: 16px;"></div>
+      <button onclick="saveUsername()" style="width: 100%; padding: 14px; background: #5865f2; border: none; border-radius: 40px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s;">Continue</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/theme-loader.js"></script>
+  <script src="/js/firebase.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script src="/js/chat.js"></script>
+  <script src="/js/loading.js"></script>
+  <script src="/js/stars.js"></script>
+
+  <script>
+    window.onload = () => {
+      if (typeof startLoading === 'function') startLoading();
+      if (typeof checkUsername === 'function') checkUsername();
+      if (typeof initFirebase === 'function') initFirebase();
+    };
+
+    window.SPECIAL_ADMINS = [
+      "sunibun","sunibuni","mcthug","trusty","enzo",
+      "asthma","viper","yoshi","zoinkers1","sigmatuffmango24s"
+    ];
+  </script>
+
+</body>
+</html>

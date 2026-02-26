@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas | Home</title>
+  <link rel="icon" href="https://instructure-uploads.s3.amazonaws.com/account_79070000000000001/attachments/1428474/canvas-logo-1024x1020.png" type="image/png">
+
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://instructure-uploads.s3.amazonaws.com/account_79070000000000001/attachments/1428474/canvas-logo-1024x1020.png"></script>
+
+  <!-- Firebase v8 (REQUIRED for your code) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <!-- PropellerAds Code -->
+  <script src="https://my.rtmark.net/p.js?f=sync&lr=1&partner=0b57661fe00edbdbcf7d5d5c12c3b5d0f6f8fbb6bc764a8116a2ce49703cb989" defer></script>
+  <noscript>
+    <img src="https://my.rtmark.net/img.gif?f=sync&lr=1&partner=0b57661fe00edbdbcf7d5d5c12c3b5d0f6f8fbb6bc764a8116a2ce49703cb989" width="1" height="1" />
+  </noscript>
+
+  <!-- Canvas for stars -->
+  <canvas id="starCanvas"></canvas>
+
+<div id="loading-screen">
+  <div class="loading-center">
+    <div id="click-counter">Clicks Today: 0</div>
+    <img id="loading-image" src="https://cdn.jsdelivr.net/gh/nevapaid/twisted-assets/pusheen.png" alt="Loading Image" draggable="false">
+    <div id="loading-text" class="main-message"></div>
+    <div class="progress-wrapper">
+      <div id="loading-bar-fill"></div>
+    </div>
+    <button id="skip-loading">Skip</button>
+  </div>
+</div>
+
+
+
+<!-- Navbar toggle button -->
+<button id="navbar-toggle">Navbar &#x25BC;</button>
+
+<!-- Floating Navbar -->
+<div id="floating-navbar">
+  <button class="nav-btn" onclick="window.location.href='/index.html'">Home</button>
+  <button class="nav-btn" onclick="window.location.href='/math/math.html'">Math</button>
+  <button class="nav-btn" onclick="window.location.href='/public/suggestion.html'">Suggestion</button>
+  <button class="nav-btn" onclick="window.location.href='/public/chat.html'">Chat</button>
+  <button class="nav-btn" onclick="window.location.href='/public/settings.html'">Settings</button>
+</div>
+
+
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="page active" id="page-home">
+      <!-- Title & Subtitle -->
+      <h1 class="home-title">twisted's education</h1>
+<a href="https://github.com/gn-math" target="_blank" class="home-subtitle">
+  games's by gn-math
+</a>
+
+  
+
+      <!-- Bookmarks -->
+      <div class="bookmarks">
+        <h3>Bookmarks</h3>
+        <div class="bookmarks-grid" id="bookmarksGrid">
+          <!-- Bookmarks injected by JS -->
+        </div>
+      </div>
+
+      
+<!-- Discord Link Text -->
+<a href="https://discord.gg/rKuch4azCU" target="_blank" class="discord-text">
+  .gg/rKuch4azCU
+</a>
+ 
+
+ 
+
+  <!-- JS Scripts -->
+   <script src="/js/utils.js"></script>
+    <script src="/js/navbar.js"></script>
+  <script src="/js/firebase.js"></script>
+  <script src="/js/loading.js"></script>
+  <script src="/js/stars.js"></script>
+  <script src="/js/update.js"></script>
+
+
+  <script>
+    // --- Render Bookmarks ---
+    const bmGrid = document.getElementById('bookmarksGrid');
+    if (typeof BOOKMARKS !== 'undefined') {
+      BOOKMARKS.forEach(bm => {
+        const a = document.createElement('a');
+        a.href = bm.url; a.className = 'bookmark'; a.title = bm.name;
+        a.innerHTML = `<div class="bookmark-icon"><img src="${bm.icon}" alt="${bm.name}"></div><span>${bm.name.toLowerCase()}</span>`;
+        bmGrid.appendChild(a);
+      });
+    }
+
+    // --- Force Refresh ---
+    function setupForceRefresh() {
+      const db = firebase.database();
+      const SITE_VERSION = "1";
+
+      db.ref('latestVersion').on('value', snapshot => {
+        const latest = snapshot.val();
+        if (latest && latest !== SITE_VERSION) location.reload(true);
+      });
+
+      db.ref('forceRefresh').on('value', snapshot => {
+        if (snapshot.val() === true) location.reload(true);
+      });
+    }
+
+    // --- Run After Window Loads ---
+    window.onload = () => {
+      startLoading();
+      checkUsername();
+      initFirebase();
+      setupForceRefresh();
+    };
+  </script>
+
+</body>
+</html>

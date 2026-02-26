@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apps - Calculas</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <canvas id="starCanvas"></canvas>
+
+<div id="loading-screen">
+  <div class="loading-center">
+
+    <div id="loading-text" class="main-message"></div>
+
+    <div class="progress-wrapper">
+      <div id="loading-bar-fill"></div>
+    </div>
+
+    <button id="skip-loading">Skip</button>
+
+  </div>
+</div>
+
+
+<!-- Navbar toggle button -->
+<button id="navbar-toggle">Navbar &#x25BC;</button> <!-- Down arrow added -->
+
+<!-- Floating Navbar -->
+<div id="floating-navbar">
+  <button class="nav-btn" onclick="window.location.href='/index.html'">Home</button>
+  <button class="nav-btn" onclick="window.location.href='/math/math.html'">Math</button>
+  <button class="nav-btn" onclick="window.location.href='/public/suggestion.html'">Suggestion</button>
+  <button class="nav-btn" onclick="window.location.href='/public/chat.html'">Chat</button>
+  <button class="nav-btn" onclick="window.location.href='/public/settings.html'">Settings</button>
+</div>
+
+ 
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <h2 style="margin-bottom: 24px; text-align: center;">Apps & Calculas</h2>
+    <div class="proxy-container" style="text-align:center; padding: 50px;">
+      <img src="https://cdn.discordapp.com/attachments/1287951689873227776/1463682964855586961/image-removebg-preview_16.png?ex=6972b87c&is=697166fc&hm=aea0fcf3157442b338d91d53bb46d2b36e1e7b841d60ace82d14c9d18cfcaf17&" alt="Calculas Shutdown" style="max-width: 300px; width: 80%; margin-bottom: 30px;">
+      <div class="shutdown-notice" style="font-size: 20px; color: rgb(255, 255, 255); margin-bottom: 20px;">
+        apps is currently <strong>shut down</strong>.<br>
+        You cannot access it at this time.
+      </div>
+      <div style="font-size: 16px; color: #fff;">
+        Please contact us on <a href="https://discord.gg/rKuch4azCU" target="_blank" style="color: #7289da; text-decoration: underline;">Discord</a> for any inquiries.
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script src="/js/loading.js"></script>
+  <script src="/js/stars.js"></script>
+  
+  <script>
+    // Initialize
+    window.onload = () => {
+      startLoading();
+      checkUsername();
+      initFirebase();
+    };
+  </script>
+  <script src="/js/theme-loader.js"></script>
+</body>
+</html>

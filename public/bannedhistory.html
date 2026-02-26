@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ban History</title>
+<style>
+ .btn-appeal {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-appeal:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-appeal:active {
+  background: #82a1f5;
+  transform: translateY(0);
+}
+
+
+  * {margin:0; padding:0; box-sizing:border-box;}
+  body {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
+    background: linear-gradient(135deg, rgba(15,23,42,.85) 0%, rgba(30,41,59,.75) 100%), linear-gradient(to bottom,#0f172a,#1e293b);
+    padding:20px;
+  }
+  .overlay {position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(2px); animation:fadeIn .3s ease-out;}
+  @keyframes fadeIn {from{opacity:0;} to{opacity:1;}}
+  @keyframes modalSlideIn {from{opacity:0; transform:scale(.95) translateY(-10px);} to{opacity:1; transform:scale(1) translateY(0);}}
+  @keyframes contentFadeIn {from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);}}
+  @keyframes rowSlideIn {from{opacity:0; transform:translateX(-10px);} to{opacity:1; transform:translateX(0);}}
+
+  .modal {position:relative; z-index:10; background:#1a2744; border-radius:6px; padding:24px 28px; max-width:500px; width:100%; box-shadow:0 0 0 1px rgba(255,255,255,.05),0 25px 50px -12px rgba(0,0,0,.6); animation:modalSlideIn .4s ease-out;}
+  .modal-header {display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; animation:contentFadeIn .4s ease-out .1s both;}
+  .modal-title {color:#fff; font-size:17px; font-weight:600; letter-spacing:-0.01em;}
+  .back-link {color:#60a5fa; font-size:13px; text-decoration:none; transition:color .2s;}
+  .back-link:hover {color:#93c5fd; text-decoration:underline;}
+  .ban-list {display:flex; flex-direction:column; gap:12px; margin-bottom:20px;}
+  .ban-item {background: rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:6px; padding:14px 16px; animation:rowSlideIn .4s ease-out both;}
+  .ban-item-header {display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .ban-reason {color:#fff; font-size:13px; font-weight:500;}
+  .ban-status {font-size:11px; font-weight:500; padding:3px 8px; border-radius:3px;}
+  .ban-status.active {background: rgba(239,68,68,.2); color:#f87171;}
+  .ban-status.expired {background: rgba(34,197,94,.2); color:#4ade80;}
+  .ban-details {color:#94a3b8; font-size:12px; line-height:1.5;}
+  .ban-code {color:#64748b; font-size:11px; margin-top:6px;}
+  .empty-state {text-align:center; padding:30px 20px; color:#64748b; font-size:13px; animation:contentFadeIn .4s ease-out .15s both;}
+  .modal-footer {display:flex; justify-content:flex-end; animation:contentFadeIn .4s ease-out .3s both;}
+  .btn-close {background:#3b82f6; color:#fff; border:none; border-radius:4px; padding:7px 18px; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s ease;}
+  .btn-close:hover {background:#2563eb; transform:translateY(-1px);}
+  .btn-close:active {background:#1d4ed8; transform:translateY(0);}
+</style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="modal">
+    <div class="modal-header">
+      <h1 class="modal-title">Ban History</h1>
+      <a href="banned.html" class="back-link">← Back</a>
+    </div>
+    <div class="ban-list" id="banList"></div>
+    <div class="modal-footer">
+      <button class="btn-close" onclick="window.location.href='/'">Close</button>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const banList = document.getElementById("banList");
+  const username = (localStorage.getItem("username") || "guest").toLowerCase();
+
+  // 1️⃣ Read current ban data from chat.js USER_BANS
+  // Since bannedhistory.html may not load chat.js, we recreate the same structure here:
+  const USER_BANS = JSON.parse(localStorage.getItem("USER_BANS") || "{}");
+
+  let history = [];
+
+  // Add current active ban if exists
+  const currentBan = USER_BANS[username];
+  if (currentBan && !currentBan.unban && (currentBan.permanent || Date.now() < currentBan.expiresAt)) {
+    history.push({ username, ...currentBan });
+  }
+
+  // Add past bans from localStorage
+  const pastBans = JSON.parse(localStorage.getItem("twisted_ban_history") || "[]");
+  history = [...history, ...pastBans.filter(b => b.username === username)];
+
+  // Render
+  if (!history.length) {
+    banList.innerHTML = `<div class="empty-state">No bans found.</div>`;
+  } else {
+    banList.innerHTML = "";
+    history.forEach((ban, i) => {
+      const now = Date.now();
+      const isActive = !ban.unban && (ban.permanent || (ban.expiresAt && ban.expiresAt > now));
+
+      const item = document.createElement("div");
+      item.className = "ban-item";
+      item.innerHTML = `
+        <div class="ban-item-header">
+          <span class="ban-reason">${ban.reason}</span>
+          <span class="ban-status ${isActive ? "active" : "expired"}">${isActive ? "Active" : "Expired"}</span>
+        </div>
+        <p class="ban-details">
+          ${isActive
+            ? (ban.permanent ? "Permanent ban" : `Temporary ban ends: ${new Date(ban.expiresAt).toLocaleString()}`)
+            : (ban.expiresAt ? `Ban ended: ${new Date(ban.expiresAt).toLocaleString()}` : "Permanent ban")
+          }
+        </p>
+        <p class="ban-code">Error code: ${ban.code || "267"}</p>
+      `;
+
+      banList.appendChild(item);
+    });
+  }
+})();
+const USER_BANS = JSON.parse(localStorage.getItem("USER_BANS") || "{}");
+</script>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/navbar.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/loading.js"></script>
+  <script src="/js/stars.js"></script>
+  <script src="/js/theme-loader.js"></script>
+</body>
+</html>

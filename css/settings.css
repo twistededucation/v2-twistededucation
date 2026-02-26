@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#header {
+    position: fixed;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32%;          /* can adjust for wider screens */
+    max-width: 1600px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 18px;
+
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    background-color: rgba(29, 29, 29, 0.7);
+
+    border-radius: 20px;
+    z-index: 9999;
+}
+
+/* Logo / home */
+#header .logo {
+    width: 40px;
+    height: 40px;
+    margin-left: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+#header .logo:hover {
+    transform: scale(1.6);
+}
+
+/* Right nav container */
+#header .right {
+    display: flex;
+    align-items: center;
+    gap: 14px;       /* spacing between icons */
+    margin-right: 8px;
+}
+
+/* Nav icons */
+#header .nav-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+#header .nav-icon:hover {
+    transform: scale(1.2);
+    cursor: url(https://global.freetls.fastly.net/stuff/icons/pointer.png), pointer !important;
+}
+#particles-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+h1.title {
+  text-align: center;
+  font-size: 2.5rem;
+  padding: 30px 0 20px;
+  position: relative;
+  z-index: 1;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 20px 40px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  border: 2px solid #00ffaa;
+  border-radius: 12px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,255,255,0.03);
+  box-shadow: 0 0 12px rgba(0,255,170,0.15);
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 0 24px rgba(0,255,170,0.35);
+}
+
+.card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.card p {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+}
+
+button, .btn {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+button:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: #00ffaa;
+}
+
+select, input[type="text"] {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 160px;
+  text-align: center;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  appearance: auto;
+}
+
+select:focus, input[type="text"]:focus {
+  border-color: #00ffaa;
+  box-shadow: 0 0 10px rgba(0,255,170,0.4);
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
+/* Theme overrides */
+body.theme-3rdbaka { background: #2d1b4e; }
+body.theme-3rdbaka .card { border-color: #b366ff; box-shadow: 0 0 12px rgba(179,102,255,0.2); }
+body.theme-3rdbaka .card:hover { box-shadow: 0 0 24px rgba(179,102,255,0.4); }
+body.theme-3rdbaka select:focus, body.theme-3rdbaka input:focus { border-color: #b366ff; box-shadow: 0 0 10px rgba(179,102,255,0.4); }
+
+body.theme-mikubeam { background: #0a2e2e; }
+body.theme-mikubeam .card { border-color: #39c5bb; box-shadow: 0 0 12px rgba(57,197,187,0.2); }
+body.theme-mikubeam .card:hover { box-shadow: 0 0 24px rgba(57,197,187,0.4); }
+
+body.theme-teto { background: #2e0a0a; }
+body.theme-teto .card { border-color: #ff6688; box-shadow: 0 0 12px rgba(255,102,136,0.2); }
+body.theme-teto .card:hover { box-shadow: 0 0 24px rgba(255,102,136,0.4); }
+
+body.theme-meximath { background: #1a2e1a; }
+body.theme-meximath .card { border-color: #66ff66; box-shadow: 0 0 12px rgba(102,255,102,0.2); }
+body.theme-meximath .card:hover { box-shadow: 0 0 24px rgba(102,255,102,0.4); }
+
+body.theme-truffled { background: #2e2218; }
+body.theme-truffled .card { border-color: #d4a056; box-shadow: 0 0 12px rgba(212,160,86,0.2); }
+body.theme-truffled .card:hover { box-shadow: 0 0 24px rgba(212,160,86,0.4); }
+
+body.theme-purpletwilight { background: #1a0a2e; }
+body.theme-purpletwilight .card { border-color: #aa55ff; box-shadow: 0 0 12px rgba(170,85,255,0.2); }
+body.theme-purpletwilight .card:hover { box-shadow: 0 0 24px rgba(170,85,255,0.4); }
+
+body.theme-sakura { background: #2e1a24; }
+body.theme-sakura .card { border-color: #ffaacc; box-shadow: 0 0 12px rgba(255,170,204,0.2); }
+body.theme-sakura .card:hover { box-shadow: 0 0 24px rgba(255,170,204,0.4); }
+
+body.theme-fireyfrenzy { background: #2e1000; }
+body.theme-fireyfrenzy .card { border-color: #ff6600; box-shadow: 0 0 12px rgba(255,102,0,0.2); }
+body.theme-fireyfrenzy .card:hover { box-shadow: 0 0 24px rgba(255,102,0,0.4); }
+
+/* Mobile */
+body.mobile-mode .grid {
+  grid-template-columns: 1fr;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
